@@ -66,7 +66,7 @@ export default function Home() {
         const templateParams = {
           to_email: formData.email,
           to_name: formData.nomeCompleto,
-          from_name: 'Form Boulder',
+          from_name: 'Form Boulder Campos do Jordão',
           message: `
 Data de Nascimento: ${new Date(formData.dataNascimento).toLocaleDateString('pt-BR')}
 Documento: ${formData.documento}
@@ -76,22 +76,52 @@ ${formData.registrarFilhos ? `\nNomes dos filhos:\n${formData.nomesFilhos}` : ''
           signature: signatureData,
         };
 
-        console.log('Sending with params:', {
-          serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
-          templateId: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
-          publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY?.substring(0, 5) + '...',
-          templateParams
-        });
+        // Send to Google Sheets via our API route
+        try {
+          const sheetResponse = await fetch('/api/sheets', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              nome: formData.nomeCompleto,
+              email: formData.email,
+              mensagem: `
+Data de Nascimento: ${new Date(formData.dataNascimento).toLocaleDateString('pt-BR')}
+Documento: ${formData.documento}
+Telefone para emergência: ${formData.telefoneEmergencia}
+${formData.registrarFilhos ? `\nNomes dos filhos:\n${formData.nomesFilhos}` : ''}
+Assinatura: ${signatureData}
+              `
+            }),
+          });
+
+          const sheetResult = await sheetResponse.json();
+          console.log('Google Sheets result:', sheetResult);
+
+          if (!sheetResult.success) {
+            throw new Error(sheetResult.error || 'Erro ao salvar no Google Sheets');
+          }
+        } catch (err) {
+          console.error('Error saving to Google Sheets:', err);
+          // Continue with email sending even if sheets fails
+        }
 
         // Send email to user
-        await emailjs.send(
+        console.log('Sending email to user:', formData.email);
+        const userEmailResult = await emailjs.send(
           process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
           process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '',
-          templateParams
+          {
+            ...templateParams,
+            to_email: formData.email,
+          }
         );
+        console.log('User email result:', userEmailResult);
 
         // Send notification to admin
-        await emailjs.send(
+        console.log('Sending email to admin');
+        const adminEmailResult = await emailjs.send(
           process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
           process.env.NEXT_PUBLIC_EMAILJS_ADMIN_TEMPLATE_ID || '',
           {
@@ -99,6 +129,7 @@ ${formData.registrarFilhos ? `\nNomes dos filhos:\n${formData.nomesFilhos}` : ''
             to_email: 'rodrigo@targetteal.com',
           }
         );
+        console.log('Admin email result:', adminEmailResult);
 
         // Clear form
         setFormData({
@@ -127,7 +158,7 @@ ${formData.registrarFilhos ? `\nNomes dos filhos:\n${formData.nomesFilhos}` : ''
 
   return (
     <main className="min-h-screen p-8 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Termo de Consentimento - Escalada Boulder</h1>
+      <h1 className="text-2xl font-bold mb-6">Termo de Consentimento - Escalada Boulder Campos do Jordão</h1>
       
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
