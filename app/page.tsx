@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import SignaturePad from 'react-signature-canvas';
 import emailjs from '@emailjs/browser';
 
