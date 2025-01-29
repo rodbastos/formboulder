@@ -1,10 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SignaturePad from 'react-signature-canvas';
 import emailjs from '@emailjs/browser';
 
 export default function Home() {
+  useEffect(() => {
+    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '');
+  }, []);
+
   const [formData, setFormData] = useState({
     nomeCompleto: '',
     email: '',
@@ -75,21 +79,19 @@ ${formData.registrarFilhos ? `\nNomes dos filhos:\n${formData.nomesFilhos}` : ''
 
         // Send email to user
         await emailjs.send(
-          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-          process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
-          templateParams,
-          process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
+          process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '',
+          templateParams
         );
 
         // Send notification to admin
         await emailjs.send(
-          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-          process.env.NEXT_PUBLIC_EMAILJS_ADMIN_TEMPLATE_ID!,
+          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
+          process.env.NEXT_PUBLIC_EMAILJS_ADMIN_TEMPLATE_ID || '',
           {
             ...templateParams,
             to_email: 'rodrigo@targetteal.com',
-          },
-          process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+          }
         );
 
         // Clear form
