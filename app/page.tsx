@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import SignaturePad from 'react-signature-canvas';
+import emailjs from '@emailjs/browser';
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export default function Home() {
   });
   const [signaturePad, setSignaturePad] = useState<SignaturePad | null>(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -56,22 +58,41 @@ export default function Home() {
       
       try {
         setError('');
-        const response = await fetch('/api/send-email', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+        setLoading(true);
+
+        const templateParams = {
+          to_email: formData.email,
+          to_name: formData.nomeCompleto,
+          from_name: 'Form Boulder',
+          message: `
+Data de Nascimento: ${new Date(formData.dataNascimento).toLocaleDateString('pt-BR')}
+Documento: ${formData.documento}
+Telefone para emergência: ${formData.telefoneEmergencia}
+${formData.registrarFilhos ? `\nNomes dos filhos:\n${formData.nomesFilhos}` : ''}
+          `,
+          signature: signatureData,
+        };
+
+        // Send email to user
+        await emailjs.send(
+          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+          process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+          templateParams,
+          process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+        );
+
+        // Send notification to admin
+        await emailjs.send(
+          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+          process.env.NEXT_PUBLIC_EMAILJS_ADMIN_TEMPLATE_ID!,
+          {
+            ...templateParams,
+            to_email: 'rodrigo@targetteal.com',
           },
-          body: JSON.stringify({
-            ...formData,
-            signature: signatureData,
-          }),
-        });
+          process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+        );
 
-        if (!response.ok) {
-          throw new Error('Erro ao enviar o formulário');
-        }
-
-        // Clear form and signature
+        // Clear form
         setFormData({
           nomeCompleto: '',
           email: '',
@@ -88,6 +109,8 @@ export default function Home() {
       } catch (err) {
         console.error('Error submitting form:', err);
         setError('Erro ao enviar o formulário. Por favor, tente novamente.');
+      } finally {
+        setLoading(false);
       }
     } else {
       setError('Por favor, adicione sua assinatura.');
@@ -262,8 +285,9 @@ export default function Home() {
         <button
           type="submit"
           className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 mt-8"
+          disabled={loading}
         >
-          Enviar Formulário
+          {loading ? 'Enviando...' : 'Enviar Formulário'}
         </button>
       </form>
     </main>
