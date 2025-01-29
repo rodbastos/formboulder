@@ -5,10 +5,6 @@ import SignaturePad from 'react-signature-canvas';
 import emailjs from '@emailjs/browser';
 
 export default function Home() {
-  useEffect(() => {
-    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '');
-  }, []);
-
   const [formData, setFormData] = useState({
     nomeCompleto: '',
     email: '',
@@ -64,6 +60,9 @@ export default function Home() {
         setError('');
         setLoading(true);
 
+        // Initialize EmailJS right before sending
+        emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '');
+
         const templateParams = {
           to_email: formData.email,
           to_name: formData.nomeCompleto,
@@ -76,6 +75,13 @@ ${formData.registrarFilhos ? `\nNomes dos filhos:\n${formData.nomesFilhos}` : ''
           `,
           signature: signatureData,
         };
+
+        console.log('Sending with params:', {
+          serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+          templateId: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+          publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY?.substring(0, 5) + '...',
+          templateParams
+        });
 
         // Send email to user
         await emailjs.send(
