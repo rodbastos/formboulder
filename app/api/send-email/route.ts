@@ -5,9 +5,20 @@ export const runtime = 'edge';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const ADMIN_EMAILS = ['rodrigo@targetteal.com']; // Replace with actual admin emails
+const ADMIN_EMAILS = ['rodrigo@targetteal.com'];
 
-const generateEmailContent = (data: any) => {
+interface FormData {
+  nomeCompleto: string;
+  email: string;
+  dataNascimento: string;
+  documento: string;
+  telefoneEmergencia: string;
+  registrarFilhos: boolean;
+  nomesFilhos?: string;
+  signature: string;
+}
+
+const generateEmailContent = (data: FormData): string => {
   const childrenSection = data.registrarFilhos ? `
     <h2>Termo de Responsabilidade para Menor(es)</h2>
     <p>Nome(s) do(s) filho(s):</p>
@@ -52,12 +63,12 @@ const generateEmailContent = (data: any) => {
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
+    const data = await request.json() as FormData;
     const emailContent = generateEmailContent(data);
 
     // Send email to user
     await resend.emails.send({
-      from: 'Form Boulder <noreply@formboulder.com>', // Replace with your verified domain
+      from: 'Form Boulder <noreply@formboulder.com>',
       to: [data.email],
       subject: 'Seu Termo de Consentimento - Escalada Boulder',
       html: emailContent,
@@ -67,7 +78,7 @@ export async function POST(request: Request) {
     await Promise.all(
       ADMIN_EMAILS.map(adminEmail =>
         resend.emails.send({
-          from: 'Form Boulder <noreply@formboulder.com>', // Replace with your verified domain
+          from: 'Form Boulder <noreply@formboulder.com>',
           to: [adminEmail],
           subject: `Novo Termo de Consentimento - ${data.nomeCompleto}`,
           html: emailContent,
@@ -76,7 +87,8 @@ export async function POST(request: Request) {
     );
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (err) {
+    console.error('Error sending email:', err);
     return NextResponse.json(
       { error: 'Error sending email' },
       { status: 500 }

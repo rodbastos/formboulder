@@ -85,7 +85,8 @@ export default function Home() {
         signaturePad?.clear();
         
         alert('Formulário enviado com sucesso! Verifique seu email.');
-      } catch (error) {
+      } catch (err) {
+        console.error('Error submitting form:', err);
         setError('Erro ao enviar o formulário. Por favor, tente novamente.');
       }
     } else {
