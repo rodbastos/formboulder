@@ -19,8 +19,12 @@ export default function Home() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -157,8 +161,8 @@ Assinatura: ${signatureData}
   };
 
   return (
-    <main className="min-h-screen p-8 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Termo de Consentimento - Escalada Boulder Campos do Jordão</h1>
+    <main className="min-h-screen p-8 max-w-4xl mx-auto bg-white dark:bg-gray-900">
+      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Termo de Consentimento - Escalada Boulder Campos do Jordão</h1>
       
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -167,163 +171,162 @@ Assinatura: ${signatureData}
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="nomeCompleto" className="block mb-1">Nome completo:</label>
-            <input
-              type="text"
-              id="nomeCompleto"
-              name="nomeCompleto"
-              required
-              className="w-full p-2 border rounded"
-              value={formData.nomeCompleto}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="email" className="block mb-1">E-mail:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              className="w-full p-2 border rounded"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="dataNascimento" className="block mb-1">Data de nascimento:</label>
-            <input
-              type="date"
-              id="dataNascimento"
-              name="dataNascimento"
-              required
-              className="w-full p-2 border rounded"
-              value={formData.dataNascimento}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="documento" className="block mb-1">Documento de Identificação (CPF):</label>
-            <input
-              type="text"
-              id="documento"
-              name="documento"
-              required
-              className="w-full p-2 border rounded"
-              value={formData.documento}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="telefoneEmergencia" className="block mb-1">Telefone para emergência:</label>
-            <input
-              type="tel"
-              id="telefoneEmergencia"
-              name="telefoneEmergencia"
-              required
-              className="w-full p-2 border rounded"
-              value={formData.telefoneEmergencia}
-              onChange={handleInputChange}
-            />
-          </div>
+        <div>
+          <label htmlFor="nomeCompleto" className="block text-sm font-medium text-gray-900 dark:text-gray-200">
+            Nome Completo
+          </label>
+          <input
+            type="text"
+            id="nomeCompleto"
+            name="nomeCompleto"
+            required
+            value={formData.nomeCompleto}
+            onChange={handleInputChange}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+          />
         </div>
 
-        <div className="prose max-w-none">
-          <h2 className="text-xl font-bold mt-8 mb-4">TERMO DE CONSENTIMENTO E ISENÇÃO DE RESPONSABILIDADE</h2>
-          <h3 className="text-lg font-semibold">ESCALADA ESPORTIVA – MODALIDADE BOULDER</h3>
-          
-          <div className="bg-gray-50 p-4 rounded mt-4">
-            <p>Eu, {formData.nomeCompleto || '[Nome do Participante]'}, portador(a) do documento de identificação {formData.documento || '[CPF]'}, declaro, para os devidos fins, que:</p>
-            
-            <ul className="list-disc pl-6 mt-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-900 dark:text-gray-200">
+            E-mail
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            value={formData.email}
+            onChange={handleInputChange}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="dataNascimento" className="block text-sm font-medium text-gray-900 dark:text-gray-200">
+            Data de Nascimento
+          </label>
+          <input
+            type="date"
+            id="dataNascimento"
+            name="dataNascimento"
+            required
+            value={formData.dataNascimento}
+            onChange={handleInputChange}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="documento" className="block text-sm font-medium text-gray-900 dark:text-gray-200">
+            Documento de Identificação (RG/CPF)
+          </label>
+          <input
+            type="text"
+            id="documento"
+            name="documento"
+            required
+            value={formData.documento}
+            onChange={handleInputChange}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="telefoneEmergencia" className="block text-sm font-medium text-gray-900 dark:text-gray-200">
+            Telefone para Emergência
+          </label>
+          <input
+            type="tel"
+            id="telefoneEmergencia"
+            name="telefoneEmergencia"
+            required
+            value={formData.telefoneEmergencia}
+            onChange={handleInputChange}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label className="flex items-center text-gray-900 dark:text-gray-200">
+            <input
+              type="checkbox"
+              name="registrarFilhos"
+              checked={formData.registrarFilhos}
+              onChange={handleInputChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <span className="ml-2">Registrar filhos menores de idade</span>
+          </label>
+        </div>
+
+        {formData.registrarFilhos && (
+          <div>
+            <label htmlFor="nomesFilhos" className="block text-sm font-medium text-gray-900 dark:text-gray-200">
+              Nomes dos Filhos
+            </label>
+            <textarea
+              id="nomesFilhos"
+              name="nomesFilhos"
+              value={formData.nomesFilhos}
+              onChange={handleInputChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+              rows={3}
+            />
+          </div>
+        )}
+
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Termo de Consentimento e Isenção de Responsabilidade</h2>
+          <div className="prose dark:prose-invert">
+            <p className="text-gray-900 dark:text-gray-200">
+              Eu, declaro que:
+            </p>
+            <ul className="list-disc pl-5 text-gray-900 dark:text-gray-200">
               <li>Tenho 18 anos ou mais, sendo legalmente responsável por minhas decisões e assumindo os riscos envolvidos na prática da Escalada Esportiva – Modalidade Boulder.</li>
-              <li>Estou ciente de que a escalada no muro de boulder do centro esportivo da Prefeitura de Campos do Jordão envolve riscos inerentes, incluindo, mas não se limitando a:
-                <ul className="list-disc pl-6">
-                  <li>Quedas e impactos contra o solo ou paredes;</li>
-                  <li>Lesões como torções, contusões e fraturas;</li>
-                  <li>Riscos associados ao uso inadequado da estrutura ou falta de experiência.</li>
+              <li>Estou ciente dos riscos inerentes à prática, incluindo:
+                <ul className="list-disc pl-5">
+                  <li>Quedas e impactos contra o solo ou paredes</li>
+                  <li>Lesões como torções, contusões e fraturas</li>
+                  <li>Riscos associados ao uso inadequado da estrutura ou falta de experiência</li>
                 </ul>
               </li>
-              <li>Estou ciente de que não há supervisão profissional fornecida pela Prefeitura ou qualquer outro órgão público, sendo minha segurança de inteira responsabilidade.</li>
-              <li>Reconheço que o muro de boulder recebe manutenção pela comunidade local de escaladores e que não há garantias formais quanto ao seu estado de conservação ou adequação para uso seguro.</li>
+              <li>Estou ciente de que não há supervisão profissional fornecida pela Prefeitura.</li>
+              <li>Reconheço que o muro recebe manutenção pela comunidade local de escaladores.</li>
             </ul>
-          </div>
-
-          <div className="mt-6">
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                name="registrarFilhos"
-                checked={formData.registrarFilhos}
-                onChange={handleInputChange}
-                className="form-checkbox"
-              />
-              <span>Quero assinar também o termo para permitir que meu filho ou filha escale.</span>
-            </label>
-          </div>
-
-          {formData.registrarFilhos && (
-            <div className="mt-4">
-              <label htmlFor="nomesFilhos" className="block mb-1">Nome completo do(s) filho(s):</label>
-              <textarea
-                id="nomesFilhos"
-                name="nomesFilhos"
-                className="w-full p-2 border rounded"
-                value={formData.nomesFilhos}
-                onChange={(e) => setFormData(prev => ({ ...prev, nomesFilhos: e.target.value }))}
-                rows={3}
-              />
-              
-              <div className="bg-gray-50 p-4 rounded mt-4">
-                <h3 className="font-semibold">DECLARAÇÃO DE RESPONSABILIDADE ADICIONAL</h3>
-                <p className="mt-2">Como responsável legal, assumo total responsabilidade pela segurança do(s) menor(es) durante a prática da Escalada Esportiva e me comprometo a supervisionar em tempo integral durante toda a atividade.</p>
-              </div>
-            </div>
-          )}
-
-          <div className="mt-6">
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                name="aceitaTermos"
-                required
-                checked={formData.aceitaTermos}
-                onChange={handleInputChange}
-                className="form-checkbox"
-              />
-              <span>Confirmo que sou maior de 18 anos e aceito todos os termos acima.</span>
-            </label>
           </div>
         </div>
 
-        <div className="mt-8">
-          <label className="block mb-1">Assinatura Digital:</label>
-          <div className="border rounded bg-white">
+        <div>
+          <label className="flex items-center text-gray-900 dark:text-gray-200">
+            <input
+              type="checkbox"
+              name="aceitaTermos"
+              checked={formData.aceitaTermos}
+              onChange={handleInputChange}
+              required
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <span className="ml-2">Li e aceito os termos acima</span>
+          </label>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-900 dark:text-gray-200">
+            Assinatura Digital
+          </label>
+          <div className="mt-1 border border-gray-300 rounded-md bg-white">
             <SignaturePad
               ref={(ref) => setSignaturePad(ref)}
               canvasProps={{
-                className: 'w-full h-40'
+                className: 'w-full h-48',
               }}
             />
           </div>
-          <button
-            type="button"
-            onClick={() => signaturePad?.clear()}
-            className="mt-2 px-4 py-2 bg-gray-200 rounded"
-          >
-            Limpar Assinatura
-          </button>
         </div>
 
         <button
           type="submit"
-          className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 mt-8"
+          className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={loading}
         >
           {loading ? 'Enviando...' : 'Enviar Formulário'}
